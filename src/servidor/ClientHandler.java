@@ -33,7 +33,6 @@ public class ClientHandler implements Runnable {
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 				PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
 			Introduccion(in,out);
-			String pregunta,respuesta;
 
 			while (true) {
 				out.println("Hola " + clientName + ". Elige una opción:\n1. Crear Partido\n2. Buscar partido\n3. Asignar resultado\n4. Ver historial\n0. Salir");
@@ -42,34 +41,44 @@ public class ClientHandler implements Runnable {
 
 				List<Partido> listaPartidos = XMLPartidoReader.leerPartidosDesdeXML(urlXML);
 				
+				int tamanio;
+				
 				if (inputLine.equals("0")) {
-					out.println("Fin de la conexion!");
+					out.println("¡Fin de la conexion!");
 					out.println(SimpleServer.delimitador);
 					break; // Salir del bucle para finalizar la conexión
 
 				}
 				else if(inputLine.equals("1")) {
 					crearPartido(in,out);
-					
-				}
-				else if(inputLine.equals("2")) {
-					MostrarPartidos(out,listaPartidos);
-					InscribirsePartido(in, out, listaPartidos);				
-
-				}
-				else if(inputLine.equals("3")) {
-					MostrarPartidosTerminados(out,listaPartidos);
-					FinalizarPartido(in, out, listaPartidos);				
-
-				}
-				else if(inputLine.equals("4")) {
-					MostrarPartidosJugador(out,listaPartidos);			
-
 				}
 				
-				 else {
+				else if(inputLine.equals("2")) {
+					tamanio = MostrarPartidosAbiertos(out,listaPartidos);
+					if(tamanio != 0) {
+						InscribirsePartido(in, out, listaPartidos);	
+					}else {
+						out.println("No hay partidos a la vista con hueco para inscribirse");
+					}
+				}
+				
+				else if(inputLine.equals("3")) {
+					tamanio = MostrarPartidosCerrados(out,listaPartidos);			
+					if(tamanio != 0) {
+						FinalizarPartido(in, out, listaPartidos);		
+					}else {
+						out.println("No es posible asignar el resultado porque no hay partidos finalizados con tu nombre");
+					}
+				}
+				
+				else if(inputLine.equals("4")) {
+					tamanio = MostrarPartidosJugador(out,listaPartidos);			
+					if(tamanio == 0) {
+						out.println("No hay partidos terminados sin resultado asignado");
+					}
+				}
+				else {
 					out.println("\nRespuesta incorrecta, por favor selecciona un número entre el 0 y el 4 \n");
-					
 				}
 			}
 		} catch (IOException e) {
@@ -86,9 +95,8 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
+	
 	public void crearPartido(BufferedReader in,PrintWriter out) {
-		out.println("Has elegido la opción crear un partido, por favor responde a las siguientes cuestiones");
-		
 		String nivel,puesto,pista,hora;
 		nivel = intercambioMsg(in,out,"¿Nivel del partido?");
 //		puesto = intercambioMsg(in,out,"¿Derecha izquierda o indiferente?");
@@ -97,32 +105,43 @@ public class ClientHandler implements Runnable {
 		XMLPartidoWriter.addPartido(urlXML,hora,nivel,pista,clientName);
 	}
 	
-	public void MostrarPartidosJugador(PrintWriter out, List<Partido> listaPartidos) {
-		out.println("Mostrando lista de partidos");
+	
+	public int MostrarPartidosJugador(PrintWriter out, List<Partido> listaPartidos) {
+		int n=0;
 		for (Partido partido : listaPartidos) {
 			if(partido.estaCompleto() && partido.haFinalizado() && partido.estaElJugador(clientName)) {
 				out.println(partido.toResultado());
+				n++;
 			}
 		}
+		return n;
+
 	}
 	
-	public void MostrarPartidosTerminados(PrintWriter out, List<Partido> listaPartidos) {
-		out.println("Mostrando lista de partidos");
+	
+	public int MostrarPartidosCerrados(PrintWriter out, List<Partido> listaPartidos) {
+		int n=0;
 		for (Partido partido : listaPartidos) {
-			if(partido.estaCompleto() && partido.estaElJugador(clientName)) {
+			if(partido.estaCompleto() && partido.estaElJugador(clientName) && !partido.haFinalizado()) {
 				out.println(partido.toString());
+				n++;
 			}
 		}
+		return n;
 	}
 	
-	public void MostrarPartidos(PrintWriter out, List<Partido> listaPartidos) {
-		out.println("Mostrando lista de partidos");
+	
+	public int MostrarPartidosAbiertos(PrintWriter out, List<Partido> listaPartidos) {
+		int n=0;
 		for (Partido partido : listaPartidos) {
 			if(!partido.estaCompleto() && !partido.haFinalizado()) {
 				out.println(partido.toString());
+				n++;
 			}
 		}
+		return n;
 	}
+	
 	
 	public void InscribirsePartido(BufferedReader in,PrintWriter out, List<Partido> listaPartidos) {
 		Boolean existe = false;
@@ -146,6 +165,7 @@ public class ClientHandler implements Runnable {
 		
 	}
 	
+	
 	public void FinalizarPartido(BufferedReader in,PrintWriter out, List<Partido> listaPartidos) {
 		Boolean existe = false,completo=false,finalizado=false;
 
@@ -153,33 +173,33 @@ public class ClientHandler implements Runnable {
 
 		fecha = intercambioMsg(in,out,"Introduce la fecha en la que jugaste");
 		pista = intercambioMsg(in,out,"Introduce la pista en la que jugaste");
-		resultado = intercambioMsg(in,out,"Introduce el resultado del partido");
-
+		resultado = intercambioMsg(in, out, "A continuación escribe el resultado por favor, no podrá ser modificado por nadie y quedará registrado");
+		out.println("okey en camino");
+		Partido p = null;
 		for (Partido partido : listaPartidos) {
-			if(partido.getFechaHora().equals(fecha) && partido.getPista().equals(pista)) {
-				 existe = true;
-			}
-			if(partido.estaCompleto()) {
-				completo=true;
-			}
-			if(partido.haFinalizado()) {
-				finalizado = true;
+			existe = partido.getFechaHora().equals(fecha) && partido.getPista().equals(pista);
+			completo=partido.estaCompleto();
+			finalizado = partido.haFinalizado();
+			
+			if(partido.haFinalizado() && partido.estaCompleto() && partido.getFechaHora().equals(fecha) && partido.getPista().equals(pista)) {
+				p=partido;
 			}
 		}
 		if(!existe) {
 			out.println("No existe ningún partido abierto a la hora y en la pista indicados");
 		}else if(!completo) {
 			out.println("No hay 4 jugadores inscritos aún, no se ha podido jugar ese partido");
-		}else if(!finalizado) {
+		}else if(finalizado) {
 			out.println("Este partido ya tiene resultado asignado, alguno de tus compañeros lo ha subido ya a la plataforma");
 		}
 		else{
-			resultado = intercambioMsg(in, out, "A continuación escribe el resultado por favor, no podrá ser modificado por nadie y quedará registrado");
 			XMLPartidoWriter.modificarResultadoPartido(urlXML, fecha, pista, resultado);
+			p.setResultado(resultado);
 		}
 		
 		
 	}
+	
 	
 	public void Introduccion(BufferedReader in,PrintWriter out) {       
 		try {        	
@@ -195,6 +215,7 @@ public class ClientHandler implements Runnable {
 			e.printStackTrace();
 		} 
 	}
+	
 	
 	public String intercambioMsg(BufferedReader in, PrintWriter out, String msg) {
 		out.println(msg);

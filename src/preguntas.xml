@@ -1,3 +1,3 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><partidos>
 
-</partidos>
+<partido fechaHora="a" nivel="aa" pista="aa"><equipos><equipo><jugador>muelash</jugador><jugador>muelash</jugador></equipo><equipo><jugador>muelash</jugador><jugador>muelash</jugador></equipo></equipos><resultado>3</resultado></partido><partido fechaHora="a" nivel="a" pista="a"><equipos><equipo><jugador>mie</jugador><jugador>mie</jugador></equipo><equipo><jugador>mie</jugador><jugador>mie</jugador></equipo></equipos><resultado/></partido><partido fechaHora="ccc" nivel="ccc" pista="ccc"><equipos><equipo><jugador>mie</jugador><jugador>mie</jugador></equipo><equipo><jugador>mie</jugador><jugador>mie</jugador></equipo></equipos><resultado>6-4</resultado></partido></partidos>
