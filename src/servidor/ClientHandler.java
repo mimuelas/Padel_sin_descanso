@@ -174,7 +174,8 @@ public class ClientHandler implements Runnable {
 		fecha = intercambioMsg(in,out,"Introduce la fecha en la que jugaste");
 		pista = intercambioMsg(in,out,"Introduce la pista en la que jugaste");
 		resultado = intercambioMsg(in, out, "A continuación escribe el resultado por favor, no podrá ser modificado por nadie y quedará registrado");
-		out.println("okey en camino");
+		out.println("Resultado " + resultado + ", si deseas salir de la app pulsa 0, si no pulsa cualquier otro botón");
+
 		Partido p = null;
 		for (Partido partido : listaPartidos) {
 			existe = partido.getFechaHora().equals(fecha) && partido.getPista().equals(pista);
@@ -195,6 +196,7 @@ public class ClientHandler implements Runnable {
 		else{
 			XMLPartidoWriter.modificarResultadoPartido(urlXML, fecha, pista, resultado);
 			p.setResultado(resultado);
+//			out.println(SimpleServer.delimitador);
 		}
 		
 		
