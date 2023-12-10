@@ -28,6 +28,7 @@ public class ClientHandler implements Runnable {
 		this.clientSocket = socket;
 	}    
 
+	//hilo de ejecucion
 	@Override
 	public void run() {
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -46,7 +47,7 @@ public class ClientHandler implements Runnable {
 				if (inputLine.equals("0")) {
 					out.println("¡Fin de la conexion!");
 					out.println(SimpleServer.delimitador);
-					break; // Salir del bucle para finalizar la conexión
+					break; 
 
 				}
 				else if(inputLine.equals("1")) {
@@ -95,17 +96,16 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
-	
+	//añade un nuevo partido al xml
 	public void crearPartido(BufferedReader in,PrintWriter out) {
 		String nivel,puesto,pista,hora;
 		nivel = intercambioMsg(in,out,"¿Nivel del partido?");
-//		puesto = intercambioMsg(in,out,"¿Derecha izquierda o indiferente?");
 		pista = intercambioMsg(in,out,"¿En que pista se jugara el partido?");
 		hora = intercambioMsg(in,out,"¿Que fecha y hora se jugara el partido?");
 		XMLPartidoWriter.addPartido(urlXML,hora,nivel,pista,clientName);
 	}
 	
-	
+	//muestra los partidos finalizados que tiene un jugador (el historial de juego)
 	public int MostrarPartidosJugador(PrintWriter out, List<Partido> listaPartidos) {
 		int n=0;
 		for (Partido partido : listaPartidos) {
@@ -118,7 +118,7 @@ public class ClientHandler implements Runnable {
 
 	}
 	
-	
+	//muestra los partidos que ya tienen 4 personas pero aún no tienen resultado
 	public int MostrarPartidosCerrados(PrintWriter out, List<Partido> listaPartidos) {
 		int n=0;
 		for (Partido partido : listaPartidos) {
@@ -130,7 +130,7 @@ public class ClientHandler implements Runnable {
 		return n;
 	}
 	
-	
+	//muestra los partidos en los que aún alguien puede ser inscrito
 	public int MostrarPartidosAbiertos(PrintWriter out, List<Partido> listaPartidos) {
 		int n=0;
 		for (Partido partido : listaPartidos) {
@@ -142,7 +142,7 @@ public class ClientHandler implements Runnable {
 		return n;
 	}
 	
-	
+	//inscribir a una persona al partido
 	public void InscribirsePartido(BufferedReader in,PrintWriter out, List<Partido> listaPartidos) {
 		Boolean existe = false;
 
@@ -165,6 +165,7 @@ public class ClientHandler implements Runnable {
 		
 	}
 	
+	//asignar resultado a un partido
 	public void FinalizarPartido(BufferedReader in,PrintWriter out, List<Partido> listaPartidos) {
 		Boolean existe = false;
 
@@ -183,8 +184,6 @@ public class ClientHandler implements Runnable {
 		}else{
 			resultado = intercambioMsg(in, out, "A continuación escribe el resultado por favor, no podrá ser modificado por nadie y quedará registrado");
 			XMLPartidoWriter.modificarResultadoPartido(urlXML, fecha, pista, resultado);
-//			p.setResultado(resultado);
-//			out.println(SimpleServer.delimitador);
 		}
 	}
 	
@@ -205,7 +204,7 @@ public class ClientHandler implements Runnable {
 		} 
 	}
 	
-	
+	//envio con respuesta al cliente
 	public String intercambioMsg(BufferedReader in, PrintWriter out, String msg) {
 		out.println(msg);
 		out.println(SimpleServer.delimitador);

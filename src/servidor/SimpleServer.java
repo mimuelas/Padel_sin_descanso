@@ -8,7 +8,7 @@ import java.util.concurrent.Executors;
 
 public class SimpleServer {
     private static final int PORT = 8080;
-    private static final int MAX_CLIENTES = 50; // Número máximo de clientes simultáneos
+    private static final int MAX_CLIENTES = 50; 
 
 	public static final String delimitador = "!.";
 	public static final String vacio = "-";
@@ -25,13 +25,12 @@ public class SimpleServer {
                     pool.execute(new ClientHandler(clientSocket));
                 } catch (IOException e) {
                     System.err.println("Error al aceptar conexión de cliente: " + e.getMessage());
-                    // Aquí puedes agregar más manejo de errores si es necesario
                 }
             }
         } catch (IOException e) {
             System.err.println("No se pudo iniciar el servidor en el puerto " + PORT + ": " + e.getMessage());
         } finally {
-            pool.shutdown(); // Asegúrate de cerrar el pool al finalizar
+            pool.shutdown();
         }
     }
 }

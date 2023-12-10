@@ -18,7 +18,7 @@ import java.io.File;
 
 public class XMLPartidoWriter {
 
-	
+	//añadir un partido a la hoja XML
     public static void addPartido(String filePath, String fechaHora, String nivel, String pista,String jugador1) {
         try {
             File xmlFile = new File(filePath);
@@ -30,7 +30,7 @@ public class XMLPartidoWriter {
             // Crear nuevo partido
             Element nuevoPartido = doc.createElement("partido");
             nuevoPartido.setAttribute("fechaHora", fechaHora);
-            nuevoPartido.setAttribute("nivel", nivel);
+            nuevoPartido.setAttribute("nivael", nivel);
             nuevoPartido.setAttribute("pista", pista);
 
             // Crear equipos y jugadores
@@ -74,6 +74,8 @@ public class XMLPartidoWriter {
         }
     }
     
+    
+    // Metodo que asigna resultado al partido (vale "-"-) (solo se ejecuta una vez por partido)
     public static void modificarResultadoPartido(String filePath, String fechaHora, String pista, String nuevoResultado) {
         try {
             File xmlFile = new File(filePath);
@@ -109,6 +111,7 @@ public class XMLPartidoWriter {
         }
     }
     
+    
     // Método para reemplazar un jugador con "-" por un nombre específico
     public static void reemplazarJugador(String filePath, String fechaHora, String pista, String nuevoNombre) {
         try {
@@ -133,7 +136,6 @@ public class XMLPartidoWriter {
                 }
             }
 
-            // Guardar cambios en el archivo XML
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             DOMSource source = new DOMSource(doc);
@@ -145,6 +147,7 @@ public class XMLPartidoWriter {
         }
     }
 
+    //este metodo es usado por reemplazarJugador
     private static boolean reemplazarJugadorConGuion(Element partido, String nuevoNombre) {
         NodeList equipos = partido.getElementsByTagName("equipo");
         for (int i = 0; i < equipos.getLength(); i++) {
@@ -157,7 +160,7 @@ public class XMLPartidoWriter {
                 }
             }
         }
-        return false; // No se encontró jugador con "-"
+        return false; // No se encontró jugador con "-", no deberiamos llegar aqui nunca
     }
 
     private static Node crearJugadorElement(Document doc, String nombre) {

@@ -108,12 +108,12 @@ public class Partido {
     
     
     public String toResultado() {
-    	return  "Partido{" +
-                "fechaHora='" + fechaHora + '\'' +
-                ", pista='" + pista + '\'' + "\n" + 
-                ", equipo1=" + equipo1.toString() +
-                ", equipo2=" + equipo2.toString() +
-                ", resultado='" + resultado + '\'' +
-                '}'+ "\n\n";
+    	return  "Partido: " +
+                "fechaHora: '" + fechaHora + '\'' +
+                ", pista: '" + pista + '\'' + "\n" + 
+                "equipo1: " + equipo1.toString() +
+                ", equipo2: " + equipo2.toString() +
+                ", \nresultado: '" + resultado + '\'' +
+                "\n\n";
     }
 }
