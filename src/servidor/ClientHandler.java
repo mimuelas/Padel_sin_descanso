@@ -101,7 +101,7 @@ public class ClientHandler implements Runnable {
 		nivel = intercambioMsg(in,out,"¿Nivel del partido?");
 //		puesto = intercambioMsg(in,out,"¿Derecha izquierda o indiferente?");
 		pista = intercambioMsg(in,out,"¿En que pista se jugara el partido?");
-		hora = intercambioMsg(in,out,"¿A que hora se jugara el partido?");
+		hora = intercambioMsg(in,out,"¿Que fecha y hora se jugara el partido?");
 		XMLPartidoWriter.addPartido(urlXML,hora,nivel,pista,clientName);
 	}
 	
@@ -165,42 +165,35 @@ public class ClientHandler implements Runnable {
 		
 	}
 	
-	
 	public void FinalizarPartido(BufferedReader in,PrintWriter out, List<Partido> listaPartidos) {
-		Boolean existe = false,completo=false,finalizado=false;
+		Boolean existe = false;
 
 		String fecha="",pista="",resultado="";
-
+		
 		fecha = intercambioMsg(in,out,"Introduce la fecha en la que jugaste");
 		pista = intercambioMsg(in,out,"Introduce la pista en la que jugaste");
-		resultado = intercambioMsg(in, out, "A continuación escribe el resultado por favor, no podrá ser modificado por nadie y quedará registrado");
-		out.println("Resultado " + resultado + ", si deseas salir de la app pulsa 0, si no pulsa cualquier otro botón");
-
-		Partido p = null;
 		for (Partido partido : listaPartidos) {
-			existe = partido.getFechaHora().equals(fecha) && partido.getPista().equals(pista);
-			completo=partido.estaCompleto();
-			finalizado = partido.haFinalizado();
-			
 			if(partido.haFinalizado() && partido.estaCompleto() && partido.getFechaHora().equals(fecha) && partido.getPista().equals(pista)) {
-				p=partido;
+				 existe = true;
 			}
 		}
 		if(!existe) {
 			out.println("No existe ningún partido abierto a la hora y en la pista indicados");
-		}else if(!completo) {
-			out.println("No hay 4 jugadores inscritos aún, no se ha podido jugar ese partido");
-		}else if(finalizado) {
-			out.println("Este partido ya tiene resultado asignado, alguno de tus compañeros lo ha subido ya a la plataforma");
+		}else {
+			out.println("Felicidades! Inscripcion realizada con exito");
+			XMLPartidoWriter.reemplazarJugador(urlXML, fecha, pista, clientName);
 		}
-		else{
+		
+		if(!existe) {
+			out.println("No existe ningún partido cerrado a la hora y en la pista indicados");
+		}else{
+			resultado = intercambioMsg(in, out, "A continuación escribe el resultado por favor, no podrá ser modificado por nadie y quedará registrado");
 			XMLPartidoWriter.modificarResultadoPartido(urlXML, fecha, pista, resultado);
-			p.setResultado(resultado);
+//			p.setResultado(resultado);
 //			out.println(SimpleServer.delimitador);
 		}
-		
-		
 	}
+	
 	
 	
 	public void Introduccion(BufferedReader in,PrintWriter out) {       
