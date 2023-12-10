@@ -151,7 +151,7 @@ public class ClientHandler implements Runnable {
 		fecha = intercambioMsg(in,out,"Introduce la fecha hora a la que deseas inscribirte");
 		pista = intercambioMsg(in,out,"Introduce la pista en la que deseas inscribirte");
 		for (Partido partido : listaPartidos) {
-			if(partido.getFechaHora().equals(fecha) && partido.getPista().equals(pista)) {
+			if(partido.getFechaHora().equals(fecha) && partido.getPista().equals(pista) && !partido.haFinalizado() && !partido.estaCompleto()) {
 				 existe = true;
 			}
 		}
@@ -173,15 +173,9 @@ public class ClientHandler implements Runnable {
 		fecha = intercambioMsg(in,out,"Introduce la fecha en la que jugaste");
 		pista = intercambioMsg(in,out,"Introduce la pista en la que jugaste");
 		for (Partido partido : listaPartidos) {
-			if(partido.haFinalizado() && partido.estaCompleto() && partido.getFechaHora().equals(fecha) && partido.getPista().equals(pista)) {
+			if(!partido.haFinalizado() && partido.estaCompleto() && partido.getFechaHora().equals(fecha) && partido.getPista().equals(pista)) {
 				 existe = true;
 			}
-		}
-		if(!existe) {
-			out.println("No existe ningún partido abierto a la hora y en la pista indicados");
-		}else {
-			out.println("Felicidades! Inscripcion realizada con exito");
-			XMLPartidoWriter.reemplazarJugador(urlXML, fecha, pista, clientName);
 		}
 		
 		if(!existe) {
