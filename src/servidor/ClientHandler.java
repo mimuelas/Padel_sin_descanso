@@ -134,7 +134,7 @@ public class ClientHandler implements Runnable {
 	public int MostrarPartidosAbiertos(PrintWriter out, List<Partido> listaPartidos) {
 		int n=0;
 		for (Partido partido : listaPartidos) {
-			if(!partido.estaCompleto() && !partido.haFinalizado()) {
+			if(!partido.estaCompleto() && !partido.haFinalizado() && !partido.estaElJugador(clientName)) {
 				out.println(partido.toString());
 				n++;
 			}
